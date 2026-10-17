@@ -40,3 +40,4 @@ lerna-debug.log*
 !.env.example
 backups/
 export_*.json
+fitme/
