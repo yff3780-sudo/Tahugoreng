@@ -6,7 +6,7 @@
 
 ## 🌐 Demo & Tautan Aplikasi
 Aplikasi dapat langsung diakses dan di-install melalui tautan GitHub Pages berikut:
-🔗 **[https://ffy.github.io/dompetku/](https://ffy.github.io/dompetku/)**
+🔗 **[https://yff3780-sudo.github.io/Tahugoreng/](https://yff3780-sudo.github.io/Tahugoreng/)**
 
 *(Bisa dijalankan langsung tanpa instalasi server, tanpa akun, dan bisa diakses saat tidak ada koneksi internet).*
 
