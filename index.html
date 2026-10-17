@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="sistem">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>DompetKu - Catatan Keuangan Pribadi Cerdas</title>
+  <meta name="description" content="Aplikasi catatan keuangan pribadi offline, cerdas, aman, dan tanpa server untuk mengelola anggaran, tagihan, dan target tabungan." />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="DompetKu" />
+
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="./manifest.json" />
+
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Stylesheet Utama -->
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <!-- BANNER NOTIFIKASI TRANSAKSI BERULANG JATUH TEMPO -->
+  <div id="notifikasi-berulang-banner" class="hidden"></div>
+
+  <!-- BANNER STATUS MODE ACARA AKTIF (Misal: Trip Jepang) -->
+  <div id="banner-mode-acara" class="banner-acara-top hidden"></div>
+
+  <!-- CONTAINER LAYOUT UTAMA -->
+  <div class="app-layout">
+    <!-- SIDEBAR NAVIGASI DESKTOP / LAPTOP -->
+    <aside class="desktop-sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="20" height="14" x="2" y="5" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M16 14h2"/></svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">DompetKu</span>
+          <span class="brand-badge">PROTOTIPE</span>
+        </div>
+      </div>
+
+      <!-- Tombol Catat Cepat Desktop -->
+      <div class="sidebar-cta">
+        <button id="btn-desktop-tambah-trx" class="btn-primary w-full flex-align-center justify-center gap-2" onclick="window.bukaModalTransaksi()">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>Catat Transaksi</span>
+        </button>
+      </div>
+
+      <!-- Menu Navigasi Sidebar -->
+      <nav class="sidebar-menu">
+        <a href="#/beranda" class="sidebar-link" data-route="beranda">
+          <svg viewBox="0 0 24 24" class="menu-icon" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Beranda</span>
+        </a>
+        <a href="#/transaksi" class="sidebar-link" data-route="transaksi">
+          <svg viewBox="0 0 24 24" class="menu-icon" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span>Transaksi</span>
+        </a>
+        <a href="#/anggaran" class="sidebar-link" data-route="anggaran">
+          <svg viewBox="0 0 24 24" class="menu-icon" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><line x1="12" y1="18" x2="12" y2="20"/><line x1="12" y1="4" x2="12" y2="6"/></svg>
+          <span>Anggaran (Pagu)</span>
+        </a>
+        <a href="#/dompet" class="sidebar-link" data-route="dompet">
+          <svg viewBox="0 0 24 24" class="menu-icon" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M16 14h2"/></svg>
+          <span>Dompet & Akun</span>
+        </a>
+        <a href="#/target" class="sidebar-link" data-route="target">
+          <svg viewBox="0 0 24 24" class="menu-icon" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          <span>Target Tabungan</span>
+        </a>
+        <a href="#/acara" class="sidebar-link" data-route="acara">
+          <svg viewBox="0 0 24 24" class="menu-icon" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+          <span>Mode Acara / Trip</span>
+        </a>
+        <a href="#/laporan" class="sidebar-link" data-route="laporan">
+          <svg viewBox="0 0 24 24" class="menu-icon" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Laporan & Grafik</span>
+        </a>
+        <a href="#/pengaturan" class="sidebar-link" data-route="pengaturan">
+          <svg viewBox="0 0 24 24" class="menu-icon" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Pengaturan</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span class="text-xs text-muted">100% Offline & Aman</span>
+      </div>
+    </aside>
+
+    <!-- WRAPPER KONTEN UTAMA -->
+    <div class="main-wrapper">
+      <!-- TOPBAR HEADER HP & TABLET -->
+      <header class="mobile-topbar">
+        <div class="topbar-brand">
+          <div class="brand-logo-icon-sm">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M16 14h2"/></svg>
+          </div>
+          <span class="font-bold text-sm tracking-tight">DompetKu</span>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn-icon-subtle toggle-privacy-btn" title="Privasi Saldo">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <main id="main-content" class="content-container">
+        <div class="loading-state text-center py-5">
+          <div class="spinner"></div>
+          <p class="text-xs text-muted mt-2">Memuat data DompetKu...</p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAVIGATION DI SMARTPHONE / HP -->
+  <nav class="mobile-bottom-nav">
+    <a href="#/beranda" class="bottom-nav-item" data-route="beranda">
+      <svg viewBox="0 0 24 24" class="nav-icon" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Beranda</span>
+    </a>
+    <a href="#/transaksi" class="bottom-nav-item" data-route="transaksi">
+      <svg viewBox="0 0 24 24" class="nav-icon" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>Transaksi</span>
+    </a>
+
+    <div class="bottom-nav-center">
+      <button id="btn-floating-tambah" class="btn-floating-plus" title="Catat Transaksi Baru" onclick="window.bukaModalTransaksi()">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+
+    <a href="#/anggaran" class="bottom-nav-item" data-route="anggaran">
+      <svg viewBox="0 0 24 24" class="nav-icon" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><line x1="12" y1="18" x2="12" y2="20"/><line x1="12" y1="4" x2="12" y2="6"/></svg>
+      <span>Anggaran</span>
+    </a>
+    <a href="#" id="nav-btn-lainnya" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" class="nav-icon" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      <span>Lainnya</span>
+    </a>
+  </nav>
+
+  <!-- BOTTOM SHEET MENU "LAINNYA" UNTUK HP -->
+  <div id="drawer-menu-backdrop" class="modal-backdrop hidden"></div>
+  <div id="drawer-menu-lainnya" class="bottom-sheet-menu hidden">
+    <div class="bottom-sheet-grabber"></div>
+    <div class="bottom-sheet-title">Menu Tambahan</div>
+    <div class="bottom-sheet-grid">
+      <a href="#/dompet" class="sheet-item" data-route="dompet">
+        <div class="sheet-icon-wrap" style="--icon-bg: #0284c7;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M16 14h2"/></svg>
+        </div>
+        <span>Dompet</span>
+      </a>
+      <a href="#/target" class="sheet-item" data-route="target">
+        <div class="sheet-icon-wrap" style="--icon-bg: #ec4899;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        </div>
+        <span>Target</span>
+      </a>
+      <a href="#/acara" class="sheet-item" data-route="acara">
+        <div class="sheet-icon-wrap" style="--icon-bg: #f97316;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+        </div>
+        <span>Mode Acara</span>
+      </a>
+      <a href="#/laporan" class="sheet-item" data-route="laporan">
+        <div class="sheet-icon-wrap" style="--icon-bg: #8b5cf6;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <span>Laporan</span>
+      </a>
+      <a href="#/pengaturan" class="sheet-item" data-route="pengaturan">
+        <div class="sheet-icon-wrap" style="--icon-bg: #64748b;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <span>Pengaturan</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- MODAL FORM LENGKAP INPUT TRANSAKSI -->
+  <div id="modal-input-transaksi" class="modal-backdrop hidden">
+    <div class="modal-dialog-large animate-slide-up">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-trx-title">Catat Transaksi Baru</h3>
+        <button id="btn-close-modal-transaksi" class="btn-close-modal">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body-scroll">
+        <div class="tabs-jenis-row mb-3">
+          <button type="button" class="tab-jenis-btn active" data-jenis="pengeluaran">Pengeluaran</button>
+          <button type="button" class="tab-jenis-btn" data-jenis="pemasukan">Pemasukan</button>
+          <button type="button" class="tab-jenis-btn" data-jenis="transfer">Transfer</button>
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label text-xs text-muted">Nominal (Rupiah)</label>
+          <div class="nominal-input-large-wrap">
+            <span class="nominal-prefix">Rp</span>
+            <input type="text" id="input-trx-nominal" class="nominal-input-large" placeholder="0" />
+          </div>
+        </div>
+
+        <div id="group-trx-valas" class="form-group mb-3 hidden p-2 rounded bg-subtle">
+          <div class="flex-between text-xs text-muted mb-1">
+            <span>Mata Uang Acara:</span>
+            <span id="label-valas-simbol" class="font-bold text-primary">JPY</span>
+          </div>
+          <input type="text" id="input-trx-valas-nominal" class="form-input" placeholder="Nominal mata uang asing" />
+        </div>
+
+        <div class="keypad-grid-mobile mb-3">
+          <button type="button" class="keypad-btn" data-key="1">1</button>
+          <button type="button" class="keypad-btn" data-key="2">2</button>
+          <button type="button" class="keypad-btn" data-key="3">3</button>
+          <button type="button" class="keypad-btn" data-key="4">4</button>
+          <button type="button" class="keypad-btn" data-key="5">5</button>
+          <button type="button" class="keypad-btn" data-key="6">6</button>
+          <button type="button" class="keypad-btn" data-key="7">7</button>
+          <button type="button" class="keypad-btn" data-key="8">8</button>
+          <button type="button" class="keypad-btn" data-key="9">9</button>
+          <button type="button" class="keypad-btn keypad-fn" data-key="+000">+000</button>
+          <button type="button" class="keypad-btn" data-key="0">0</button>
+          <button type="button" class="keypad-btn keypad-fn text-danger" data-key="backspace">⌫</button>
+        </div>
+
+        <div id="group-kategori-trx" class="form-group mb-3">
+          <label class="form-label">Kategori</label>
+          <select id="select-trx-kategori" class="form-select mb-2"></select>
+          <select id="select-trx-subkategori" class="form-select hidden"></select>
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label" id="label-dompet-asal">Dompet / Akun</label>
+          <select id="select-trx-dompet" class="form-select"></select>
+        </div>
+
+        <div id="group-transfer-tujuan" class="form-group mb-3 hidden">
+          <label class="form-label">Transfer ke Dompet Tujuan</label>
+          <select id="select-trx-dompet-tujuan" class="form-select"></select>
+        </div>
+
+        <div id="group-biaya-admin" class="form-group mb-3 hidden">
+          <label class="form-label">Biaya Admin Transfer (Rp)</label>
+          <input type="text" id="input-trx-biaya-admin" class="form-input" placeholder="0" />
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label">Tanggal & Jam</label>
+          <input type="datetime-local" id="input-trx-tanggal" class="form-input" />
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label">Catatan</label>
+          <input type="text" id="input-trx-catatan" class="form-input" placeholder="Makan siang di mana, beli apa..." />
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label">Tag Opsional (pisahkan koma)</label>
+          <input type="text" id="input-trx-tag" class="form-input" placeholder="#kantor, #jajan, #liburan" />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="btn-simpan-transaksi" class="btn-primary w-full">Simpan Transaksi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAYAR KUNCI PIN KEAMANAN -->
+  <div id="app-lock-screen" class="app-lock-screen hidden">
+    <div class="lock-screen-content text-center">
+      <div class="lock-brand-icon mb-3">
+        <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <h2 class="text-xl font-bold mb-1">DompetKu Terkunci</h2>
+      <p class="text-xs text-muted mb-4">Masukkan PIN 4–6 digit untuk membuka data keuangan kamu</p>
+
+      <div class="pin-dots-row mb-4">
+        <span class="pin-dot"></span>
+        <span class="pin-dot"></span>
+        <span class="pin-dot"></span>
+        <span class="pin-dot"></span>
+        <span class="pin-dot"></span>
+        <span class="pin-dot"></span>
+      </div>
+
+      <div class="pin-keypad-grid">
+        <button class="btn-pin-key" data-val="1">1</button>
+        <button class="btn-pin-key" data-val="2">2</button>
+        <button class="btn-pin-key" data-val="3">3</button>
+        <button class="btn-pin-key" data-val="4">4</button>
+        <button class="btn-pin-key" data-val="5">5</button>
+        <button class="btn-pin-key" data-val="6">6</button>
+        <button class="btn-pin-key" data-val="7">7</button>
+        <button class="btn-pin-key" data-val="8">8</button>
+        <button class="btn-pin-key" data-val="9">9</button>
+        <button class="btn-pin-key fn" data-val="clear">C</button>
+        <button class="btn-pin-key" data-val="0">0</button>
+        <button class="btn-pin-key fn" data-val="backspace">⌫</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script type="module" src="./src/app.js"></script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          console.log('DompetKu ServiceWorker terdaftar:', reg.scope);
+        }).catch((err) => {
+          console.warn('Pendaftaran ServiceWorker gagal:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
